@@ -19,10 +19,14 @@ class visual_label():
             writer.writerows(self.csv_list)
 
     def click(self,i):
-        self.showing_list[i][0]=self.csv_list[0][2].replace('\'',"")
+        #显示的对应图片替换为我们新的图片
+        self.showing_list[i][0]=self.csv_list[self.labeling_row_num][2].replace('\'',"")
         self.csv_list[self.labeling_row_num].append(self.showing_list[i][1])
+        #当前检测的行数加一
         self.labeling_row_num+=1
+        #更新图片
         self.image_set()
+        #用于回退使用的更新判断bool
         self.if_add_new=False
 
     def click1(self):
@@ -39,16 +43,17 @@ class visual_label():
     def init(self):
         self.csv_reader()
         self.image_set()
-
+    #按击新类型
     def click_new(self):
+        #判断当前展示的图片有多少张，若为五张
+        self.if_add_new = True
         if len(self.showing_list)==5:
-            self.if_add_new = True
             self.replaced=self.showing_list.pop(0)
-        self.showing_list.append([self.csv_list[self.labeling_row_num][2].replace('\'',""),self.labeled_kind])
-        if len(self.csv_list[0]) < 4:
+            self.showing_list.append([self.csv_list[self.labeling_row_num][2].replace('\'',""),self.labeled_kind])
             self.csv_list[self.labeling_row_num].append(self.labeled_kind)
         else:
-            self.csv_list[self.labeling_row_num][3]=self.labeled_kind
+            self.csv_list[self.labeling_row_num].append(self.labeled_kind)
+            self.showing_list.append([self.csv_list[self.labeling_row_num][2].replace('\'',""),self.labeled_kind])
 
         self.labeling_row_num+=1
         self.labeled_kind+=1
@@ -56,25 +61,26 @@ class visual_label():
 
     def click_absnormal(self):
         self.csv_list[self.labeling_row_num].append(-1)
+
         self.labeling_row_num+=1
         self.image_set()
 
     def  click_re(self):
         self.labeling_row_num-=1
+
         self.csv_list[self.labeling_row_num].pop()
-        if self.if_add_new and len(self.showing_list)>=1:
+        if self.if_add_new and len(self.showing_list)==5:
             self.labeled_kind-=1
             self.showing_list.pop()
             self.showing_list.insert(0,self.replaced)
+
         self.image_set()
         self.if_add_new=False
         self.replaced=None
 
     def image_set(self):
         if self.labeled_kind==0:
-            if len(self.csv_list[0])<4:
-                self.csv_list[0].append(0)
-            else:self.csv_list[0][3]=0
+            self.csv_list[0].append(0)
 
             self.labeling_row_num+=1
             self.showing_list.append([self.csv_list[0][2].replace('\'',""),self.labeled_kind])
@@ -108,7 +114,7 @@ class visual_label():
         else:
             self.csv_writer()
 
-        if self.labeling_row_num%10:
+        if self.labeling_row_num:
             self.csv_writer()
 
     def __init__(self):
@@ -154,17 +160,17 @@ class visual_label():
         self.pic_new=Label(self.root,text='new pic')
         self.btn_wrong=Button(self.root,text='错误类型',command=self.click_absnormal)
         self.btn_new=Button(self.root,text='新类型',command=self.click_new)
-        self.pic_new.grid(row=2,sticky=E)
-        self.btn_new.grid(row=3,column=1,sticky=E)
-        self.btn_wrong.grid(row=3,column=0)
+        self.pic_new.grid(row=2,column=0,sticky=E)
+        self.btn_new.grid(row=2,column=1,sticky=E)
+        self.btn_wrong.grid(row=2,column=2)
 
         self.but_save=Button(self.root,text='保存数据',command=self.csv_writer)
-        self.but_save.grid(row=3,column=2,sticky=E)
+        self.but_save.grid(row=2,column=3,sticky=E)
 
         self.if_add_new=False
 
         self.but_re=Button(self.root,text='重标上一个',command=self.click_re)
-        self.but_re.grid(row=3,column=3,sticky=E)
+        self.but_re.grid(row=2,column=4,sticky=E)
 
         self.init()
 
