@@ -37,8 +37,9 @@ class PopupDialog():
         #关闭键
         self.but_ok=Button(self.top,text='OK',command=self.ok)
         self.but_ok.pack(side='bottom')
+        self.top.bind("<Key>",self.ok)
     #按键即关闭窗口，需关闭才能够在主窗口继续操作
-    def ok(self):
+    def ok(self,event=None):
         self.top.destroy()
 
 #主窗口
@@ -68,15 +69,15 @@ class visual_label():
         #用于回退使用的更新判断bool
         self.if_add_new=False
 
-    def click1(self):
+    def click1(self,event=None):
         self.click(0)
-    def click2(self):
+    def click2(self,event=None):
         self.click(1)
-    def click3(self):
+    def click3(self,event=None):
         self.click(2)
-    def click4(self):
+    def click4(self,event=None):
         self.click(3)
-    def click5(self):
+    def click5(self,event=None):
         self.click(4)
 
     #初始化，读取csv，产生分类dict，如果是重新开始的话会设置reset
@@ -87,7 +88,7 @@ class visual_label():
         #self.image_set()
 
     #按击新类型
-    def click_new(self):
+    def click_new(self,event=None):
         #判断当前展示的图片有多少张，若为五张
         self.if_add_new = True
         self.labeled_kind+=1
@@ -102,14 +103,14 @@ class visual_label():
         self.labeling_row_num+=1
         self.image_set()
 
-    def click_absnormal(self):
+    def click_absnormal(self,event=None):
         self.csv_list[self.labeling_row_num].append(-1)
 
         self.labeling_row_num+=1
         self.image_set()
 
     #重标上一张按钮的功能实现
-    def  click_re(self):
+    def  click_re(self,event=None):
         #当前标记的行号回退，行号指示的是为标记的
         self.labeling_row_num-=1
         #删除上一个错误标记，并返回其标记的类号
@@ -233,7 +234,7 @@ class visual_label():
                 self.showing_list.append([dict_list[i][-1][-1],self.labeled_kind-num+i+1])
         self.image_set()
 
-    def more_detail(self):
+    def more_detail(self,event=None):
         src_img_path=self.src_img_path+'/'+self.csv_list[self.labeling_row_num][0].split('\'')[-1]+'/'+self.csv_list[self.labeling_row_num][1].split('\'')[-1]+'.jpg'
         pw=PopupDialog(self.windows,src_img_path)
         #等待弹窗关闭
@@ -281,6 +282,22 @@ class visual_label():
 
         self.but_more_detail=Button(self.root,text='more',command=self.more_detail,width=5,height=3)
         self.but_more_detail.grid(row=2,column=4,sticky=E)
+
+
+
+        '''
+        快捷键设置部分，可以按照自己需要设定
+        '''
+        self.windows.bind("1",self.click1)
+        self.windows.bind("2",self.click2)
+        self.windows.bind("3",self.click3)
+        self.windows.bind("4",self.click4)
+        self.windows.bind("5",self.click5)
+        #关于快捷键的设置可以参考：https://blog.csdn.net/bnanoou/article/details/38434443
+        self.windows.bind("<Return>",self.click_new)#回车新的类
+        self.windows.bind("<space>",self.click_absnormal)#空格错误类
+        self.windows.bind("<Escape>",self.click_re)#Esc重标上一个
+        self.windows.bind("<Tab>",self.more_detail)#Tab更多信息
 
         self.if_add_new=False
 
