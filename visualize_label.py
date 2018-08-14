@@ -115,29 +115,28 @@ class visual_label():
         self.labeling_row_num-=1
         #删除上一个错误标记，并返回其标记的类号
         item=self.csv_list[self.labeling_row_num].pop()
+        self.dict[item].pop()
         #如果新增的类，并且待选择有5个
-        if self.if_add_new and len(self.showing_list)==5:
+        if self.if_add_new and self.labeled_kind>5:
             #总类数减一
             self.labeled_kind-=1
             #待选择的列表剔除错误新增的部分
             self.showing_list.pop()
             #然后将原来被踢出的图片重新插回
             self.showing_list.insert(0,self.replaced)
-        elif self.if_add_new:
+        elif self.if_add_new or self.dict[item]==[]:
             #如果棕待选择不足5个，那么需要显示为空
             self.labeled_kind-=1
             self.showing_list.pop()
-            self.pic[item]=None
-            self.pic_[item].configure(text='')
-            self.but_[item].configure(image=self.pic[item])
+            self.pic[item-1]=None
+            self.pic_[item-1].configure(text='')
+            self.but_[item-1].configure(image=self.pic[item-1])
         elif len(self.showing_list)==5:
             #如果是替换了某一个类的显示图片，那么提出该图片，并且更换一张
-            self.dict[item].pop()
             self.showing_list[item-(self.labeled_kind-4)]=[self.dict[item][-1],item]
         else:
             #如果未足5张又更换了某一个类的图片
-            self.dict[item].pop()
-            for i in range(0,self.labeled_kind):
+            for i in range(1,self.labeled_kind):
                 self.showing_list[i]=[self.dict[i][-1],i]
         self.image_set()
         self.if_add_new=False
@@ -206,16 +205,16 @@ class visual_label():
         self.csv_path = "/home/shikigan/kiwi_fung/csv_dir"
         self.res_path = '/home/shikigan/res'
         self.src_img_path='/home/shikigan/cowphoto'
-        self.video_num = '03270857'
+        self.video_num = '03241051'
 
 
         # 默认显示参数
         self.pic_default_height = 180
         self.max_showing_pic_num = 5
         #当前标记的那一行记录
-        self.labeling_row_num = 2184
+        self.labeling_row_num = 0
         #当前标记的那一类型
-        self.labeled_kind = 52
+        self.labeled_kind = 0
 
         # 全局参数
         self.showing_list = list()
